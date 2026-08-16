@@ -34,6 +34,23 @@ app.get("/", (req, res) => {
     res.send("Library Management System API is Running 🚀");
 });
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'https://bookhead-library-management-system.onrender.com/'
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
 // Server
 const PORT = process.env.PORT || 3000;
 
