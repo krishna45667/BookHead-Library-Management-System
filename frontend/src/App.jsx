@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import AddBook from "./pages/AddBook";
 import MyBorrowings from "./pages/MyBorrowings";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminBorrowings from "./pages/AdminBorrowings";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 const App = () => {
@@ -30,6 +31,15 @@ const App = () => {
         element={
           <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/borrowings"
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminBorrowings />
           </ProtectedRoute>
         }
       />

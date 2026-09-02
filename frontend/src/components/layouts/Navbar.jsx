@@ -10,7 +10,12 @@ const Navbar = () => {
 
     const navLinks = [
         { to: "/home", label: "Home" },
-        ...(isAdmin ? [{ to: "/admin/dashboard", label: "Dashboard" }] : []),
+        ...(isAdmin
+            ? [
+                  { to: "/admin/dashboard", label: "Dashboard" },
+                  { to: "/admin/borrowings", label: "Borrowings" },
+              ]
+            : []),
         { to: "/books", label: "Books" },
         ...(!isAdmin ? [{ to: "/my-borrowings", label: "My Borrowings" }] : []),
         { to: "/profile", label: "Profile" },
