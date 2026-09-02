@@ -9,6 +9,7 @@ const connectDb = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const borrowingRoutes = require("./routes/borrowingRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/borrowings", borrowingRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/", (req, res) => {
     res.send("Library Management System API is Running 🚀");

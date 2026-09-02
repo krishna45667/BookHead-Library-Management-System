@@ -1,0 +1,46 @@
+[33mcommit 1951991d399959d7667afdeb78360c4f7e92aac3[m
+Author: Krishna_266 <jaiswalkrishna2619@gmail.com>
+Date:   Sat Aug 8 13:31:33 2026 +0530
+
+    Initial commit: BookHead Library Management System
+
+ backend/.gitignore                            |    2 [32m+[m
+ backend/config/db.js                          |   15 [32m+[m
+ backend/controllers/authControllers.js        |   87 [32m+[m
+ backend/controllers/bookControllers.js        |  156 [32m++[m
+ backend/middlewares/isLoggedIn.js             |   21 [32m+[m
+ backend/models/Book.js                        |   38 [32m+[m
+ backend/models/user.js                        |   25 [32m+[m
+ backend/package-lock.json                     | 1645 [32m++++++++++++[m
+ backend/package.json                          |   24 [32m+[m
+ backend/routes/authRoutes.js                  |   18 [32m+[m
+ backend/routes/bookRoutes.js                  |   19 [32m+[m
+ backend/server.js                             |   42 [32m+[m
+ frontend/.gitignore                           |    3 [32m+[m
+ frontend/README.md                            |   16 [32m+[m
+ frontend/eslint.config.js                     |   21 [32m+[m
+ frontend/index.html                           |   13 [32m+[m
+ frontend/package-lock.json                    | 3315 [32m+++++++++++++++++++++++++[m
+ frontend/package.json                         |   32 [32m+[m
+ frontend/public/favicon.svg                   |    1 [32m+[m
+ frontend/public/icons.svg                     |   24 [32m+[m
+ frontend/src/App.jsx                          |   56 [32m+[m
+ frontend/src/components/ProtectedRoutes.jsx   |   45 [32m+[m
+ frontend/src/components/books/BookCard.jsx    |  110 [32m+[m
+ frontend/src/components/books/SearchBar.jsx   |   26 [32m+[m
+ frontend/src/components/dashboard/Actions.jsx |   32 [32m+[m
+ frontend/src/components/dashboard/Cards.jsx   |   40 [32m+[m
+ frontend/src/components/dashboard/Welcome.jsx |   18 [32m+[m
+ frontend/src/components/layouts/Footer.jsx    |   13 [32m+[m
+ frontend/src/components/layouts/Navbar.jsx    |   76 [32m+[m
+ frontend/src/index.css                        |    1 [32m+[m
+ frontend/src/main.jsx                         |   13 [32m+[m
+ frontend/src/pages/AddBook.jsx                |  174 [32m++[m
+ frontend/src/pages/Books.jsx                  |  100 [32m+[m
+ frontend/src/pages/Home.jsx                   |  142 [32m++[m
+ frontend/src/pages/Login.jsx                  |  130 [32m+[m
+ frontend/src/pages/Notfound.jsx               |    0
+ frontend/src/pages/Profile.jsx                |  164 [32m++[m
+ frontend/src/pages/Register.jsx               |  158 [32m++[m
+ frontend/vite.config.js                       |    8 [32m+[m
+ 39 files changed, 6823 insertions(+)

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "node scripts/testFines.js",
+    "test": "node scripts/testFines.js && node scripts/testDashboard.js",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "make-admin": "node scripts/createAdmin.js",
