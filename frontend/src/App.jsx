@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Books from "./pages/Books";
 import Profile from "./pages/Profile";
 import AddBook from "./pages/AddBook";
+import MyBorrowings from "./pages/MyBorrowings";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 const App = () => {
@@ -33,6 +34,15 @@ const App = () => {
       />
 
       <Route
+        path="/my-borrowings"
+        element={
+          <ProtectedRoute memberOnly={true}>
+            <MyBorrowings />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/profile"
         element={
           <ProtectedRoute>
@@ -44,7 +54,7 @@ const App = () => {
       <Route
         path="/add-book"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute adminOnly={true}>
             <AddBook />
           </ProtectedRoute>
         }

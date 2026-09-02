@@ -4,9 +4,14 @@ import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import SearchBar from "../components/books/SearchBar";
 import BookCard from "../components/books/BookCard";
+import Navbar from "../components/layouts/Navbar";
+import Footer from "../components/layouts/Footer";
+import { useAuth } from "../context/AuthContext";
 
 const Books = () => {
+    const { isAdmin } = useAuth();
     const [books, setBooks] = useState([]);
+    const [myBorrowedBookIds, setMyBorrowedBookIds] = useState(new Set());
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
 
@@ -17,7 +22,24 @@ const Books = () => {
                 "http://localhost:3000/api/books",
                 { withCredentials: true }
             );
-            setBooks(response.data.books);
+            setBooks(response.data.books || []);
+
+            if (!isAdmin) {
+                try {
+                    const borrowRes = await axios.get(
+                        "http://localhost:3000/api/borrowings/my",
+                        { withCredentials: true }
+                    );
+                    const activeIds = new Set(
+                        (borrowRes.data.borrowings || [])
+                            .filter((b) => b.status === "Active")
+                            .map((b) => (b.book?._id ? b.book._id : b.book))
+                    );
+                    setMyBorrowedBookIds(activeIds);
+                } catch (bErr) {
+                    console.error("Failed to fetch member borrowings:", bErr);
+                }
+            }
         } catch (err) {
             console.log(err);
         } finally {
@@ -27,7 +49,7 @@ const Books = () => {
 
     useEffect(() => {
         fetchBooks();
-    }, []);
+    }, [isAdmin]);
 
     const filteredBooks = books.filter((book) =>
         book.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -36,64 +58,74 @@ const Books = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#0f1115] bg-[radial-gradient(ellipse_at_top,_#1a1d24_0%,_#0f1115_55%)]">
-            <div className="max-w-7xl mx-auto p-6 sm:p-8 lg:p-10">
+        <>
+            <Navbar />
 
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-                    <div>
-                        <h1 className="text-3xl sm:text-4xl font-bold text-zinc-50 tracking-tight">
-                            Library Books
-                        </h1>
-                        <p className="text-zinc-400 mt-2">
-                            Browse, search and manage your books.
-                        </p>
+            <div className="min-h-screen bg-[#0f1115] bg-[radial-gradient(ellipse_at_top,_#1a1d24_0%,_#0f1115_55%)]">
+                <div className="max-w-7xl mx-auto p-6 sm:p-8 lg:p-10">
+
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+                        <div>
+                            <h1 className="text-3xl sm:text-4xl font-bold text-zinc-50 tracking-tight">
+                                Library Books
+                            </h1>
+                            <p className="text-zinc-400 mt-2">
+                                Browse, search and borrow books from the collection.
+                            </p>
+                        </div>
+
+                        {isAdmin && (
+                            <Link to="/add-book">
+                                <button className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 px-5 py-3 rounded-lg text-zinc-900 font-semibold transition cursor-pointer">
+                                    <FaPlus className="text-sm" />
+                                    Add Book
+                                </button>
+                            </Link>
+                        )}
                     </div>
 
-                    <Link to="/add-book">
-                        <button className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 px-5 py-3 rounded-lg text-zinc-900 font-semibold transition">
-                            <FaPlus className="text-sm" />
-                            Add Book
-                        </button>
-                    </Link>
+                    <SearchBar search={search} setSearch={setSearch} />
+
+                    {loading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                            {[...Array(6)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="h-48 rounded-xl bg-zinc-800/40 border border-zinc-700/40 animate-pulse"
+                                />
+                            ))}
+                        </div>
+                    ) : filteredBooks.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-zinc-700 p-10 text-center text-zinc-400 mt-6">
+                            {search
+                                ? `No books match "${search}".`
+                                : "No books yet — add one to get started."}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                            {filteredBooks.map((book) => (
+                                <BookCard
+                                    key={book._id}
+                                    id={book._id}
+                                    title={book.title}
+                                    author={book.author}
+                                    genre={book.genre}
+                                    publisher={book.publisher}
+                                    pageCount={book.pageCount}
+                                    quantity={book.quantity}
+                                    availableQuantity={book.availableQuantity}
+                                    fetchBooks={fetchBooks}
+                                    isBorrowed={myBorrowedBookIds.has(book._id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+
                 </div>
-
-                <SearchBar search={search} setSearch={setSearch} />
-
-                {loading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                        {[...Array(6)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="h-48 rounded-xl bg-zinc-800/40 border border-zinc-700/40 animate-pulse"
-                            />
-                        ))}
-                    </div>
-                ) : filteredBooks.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-zinc-700 p-10 text-center text-zinc-400 mt-6">
-                        {search
-                            ? `No books match "${search}".`
-                            : "No books yet — add one to get started."}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                        {filteredBooks.map((book) => (
-                            <BookCard
-                                key={book._id}
-                                id={book._id}
-                                title={book.title}
-                                author={book.author}
-                                genre={book.genre}
-                                publisher={book.publisher}
-                                pageCount={book.pageCount}
-                                status={book.status}
-                                fetchBooks={fetchBooks}
-                            />
-                        ))}
-                    </div>
-                )}
-
             </div>
-        </div>
+
+            <Footer />
+        </>
     );
 };
 

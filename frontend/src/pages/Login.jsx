@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { FaBookOpen } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const inputClass =
     "w-full px-4 py-3 bg-zinc-900/60 border border-zinc-700/60 outline-none rounded-lg focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/20 transition text-zinc-100";
 
 const Login = () => {
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -35,6 +37,9 @@ const Login = () => {
                 formData,
                 { withCredentials: true }
             )
+            if (response.data.user) {
+                setUser(response.data.user);
+            }
             alert(response.data.message)
             navigate("/home")
         } catch (err) {

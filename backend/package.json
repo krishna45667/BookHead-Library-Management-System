@@ -1,10 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "node scripts/testFines.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "make-admin": "node scripts/createAdmin.js",
+    "migrate-books": "node scripts/migrateBooks.js"
   },
   "keywords": [],
   "author": "",

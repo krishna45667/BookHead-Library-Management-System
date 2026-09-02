@@ -14,11 +14,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    dob:{
-        type: Date,
-        required: true,
+    role: {
+        type: String,
+        enum: ["admin", "member"],
+        default: "member"
     }
-    
 });
 
 const User = mongoose.model("User",userSchema)

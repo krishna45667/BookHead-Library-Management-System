@@ -1,31 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children }) => {
-    const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+const ProtectedRoute = ({ children, adminOnly = false, memberOnly = false }) => {
+    const { user, loading, fetchUser } = useAuth();
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                await axios.get(
-                    "http://localhost:3000/api/auth/me",
-                    {
-                        withCredentials: true,
-                    }
-                );
-
-                setIsAuthenticated(true);
-            } catch (err) {
-                setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAuth();
-    }, []);
+        if (!user) {
+            fetchUser();
+        }
+    }, [user, fetchUser]);
 
     if (loading) {
         return (
@@ -35,11 +19,19 @@ const ProtectedRoute = ({ children }) => {
         );
     }
 
-    if (!isAuthenticated) {
+    if (!user) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (adminOnly && user.role !== "admin") {
+        return <Navigate to="/books" replace />;
+    }
+
+    if (memberOnly && user.role === "admin") {
+        return <Navigate to="/books" replace />;
     }
 
     return children;
 };
 
-export default ProtectedRoute;
+export default ProtectedRoute;

@@ -4,7 +4,7 @@ import {
   FaUserCircle,
   FaUser,
   FaEnvelope,
-  FaCalendarAlt,
+  FaShieldAlt,
   FaBook,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -32,7 +32,7 @@ const Profile = () => {
         );
 
         setUser(userResponse.data.user);
-        setBooks(booksResponse.data.books);
+        setBooks(booksResponse.data.books || []);
       } catch (err) {
         console.log(err);
       }
@@ -44,12 +44,14 @@ const Profile = () => {
   const totalBooks = books.length;
 
   const availableBooks = books.filter(
-    (book) => book.status === "Available"
+    (book) => (book.availableQuantity ?? 1) > 0
   ).length;
 
   const borrowedBooks = books.filter(
-    (book) => book.status === "Borrowed"
+    (book) => (book.availableQuantity ?? 0) === 0
   ).length;
+
+  const isAdmin = user.role === "admin";
 
   return (
     <div className="min-h-screen bg-zinc-900 text-white p-8">
@@ -64,27 +66,31 @@ const Profile = () => {
         <div className="bg-zinc-800 rounded-xl p-8 shadow-lg">
 
           <div className="flex flex-col items-center mb-8">
-            <FaUserCircle className="text-8xl text-blue-500 mb-3" />
+            <FaUserCircle className="text-8xl text-amber-500 mb-3" />
 
             <h2 className="text-2xl font-semibold">
               {user.username}
             </h2>
 
-            <p className="text-zinc-400">
-              Library Member
-            </p>
+            <span className={`mt-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+              isAdmin
+                ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                : "bg-blue-500/20 text-blue-400 border border-blue-500/40"
+            }`}>
+              {isAdmin ? "Administrator" : "Library Member"}
+            </span>
           </div>
 
           <form className="flex flex-col gap-5">
 
             <div className="flex flex-col gap-2">
               <label className="flex items-center gap-2 text-white">
-                <FaUser className="text-blue-500" />
+                <FaUser className="text-amber-500" />
                 Username
               </label>
 
               <input
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none text-zinc-100"
                 type="text"
                 value={user.username || ""}
                 readOnly
@@ -93,12 +99,12 @@ const Profile = () => {
 
             <div className="flex flex-col gap-2">
               <label className="flex items-center gap-2 text-white">
-                <FaEnvelope className="text-blue-500" />
+                <FaEnvelope className="text-amber-500" />
                 Email
               </label>
 
               <input
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none"
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none text-zinc-100"
                 type="email"
                 value={user.email || ""}
                 readOnly
@@ -107,14 +113,14 @@ const Profile = () => {
 
             <div className="flex flex-col gap-2">
               <label className="flex items-center gap-2 text-white">
-                <FaCalendarAlt className="text-blue-500" />
-                Date of Birth
+                <FaShieldAlt className="text-amber-500" />
+                Role
               </label>
 
               <input
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none"
-                type="date"
-                value={user.dob ? user.dob.substring(0, 10) : ""}
+                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg outline-none text-zinc-100 capitalize"
+                type="text"
+                value={user.role || "member"}
                 readOnly
               />
             </div>

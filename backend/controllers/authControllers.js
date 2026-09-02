@@ -4,18 +4,32 @@ const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password,10);
+        const { username, email, password } = req.body;
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                message: "An account with this email already exists",
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
-            username: req.body.username,
-            email: req.body.email,
+            username,
+            email,
             password: hashedPassword,
-            dob: req.body.dob,
-        })
+            role: "member",
+        });
 
         res.status(201).json({
             message: "User registered successfully",
-            user,
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            },
         });
     } catch (err) {
         res.status(500).json({
@@ -23,6 +37,7 @@ const registerUser = async (req, res) => {
         });
     }
 };
+
 const loginUser = async (req, res) => {
     try {
         const user = await User.findOne({
@@ -46,13 +61,19 @@ const loginUser = async (req, res) => {
             {
                 id: user._id,
                 email: user.email,
+                role: user.role,
             },
             process.env.JWT_SECRET
         );
         res.cookie("token", token);
         return res.status(200).json({
             message: "Login Successful",
-            user,
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            },
         });
 
     } catch (err) {
@@ -84,4 +105,4 @@ const logoutUser = (req, res) => {
     });
 };
 
-module.exports= {registerUser,loginUser,getCurrentUser,logoutUser}
+module.exports = { registerUser, loginUser, getCurrentUser, logoutUser };

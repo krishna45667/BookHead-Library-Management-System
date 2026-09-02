@@ -1,29 +1,27 @@
 import React from "react";
-import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaBookOpen } from "react-icons/fa";
-
-const navLinks = [
-    { to: "/home", label: "Home" },
-    { to: "/books", label: "Books" },
-    { to: "/profile", label: "Profile" },
-];
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { logout, isAdmin } = useAuth();
+
+    const navLinks = [
+        { to: "/home", label: "Home" },
+        { to: "/books", label: "Books" },
+        ...(!isAdmin ? [{ to: "/my-borrowings", label: "My Borrowings" }] : []),
+        { to: "/profile", label: "Profile" },
+    ];
 
     const handleLogout = async () => {
         try {
-            const response = await axios.post(
-                "http://localhost:3000/api/auth/logout",
-                {},
-                { withCredentials: true }
-            );
-            alert(response.data.message);
+            await logout();
+            alert("Logged out Successfully");
             navigate("/login");
         } catch (err) {
-            alert(err.response?.data?.message || "Logout Failed");
+            alert("Logout Failed");
         }
     };
 

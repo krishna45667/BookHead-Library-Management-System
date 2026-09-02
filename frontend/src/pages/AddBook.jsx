@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { FaArrowLeft, FaBookOpen } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const inputClass =
     "w-full px-4 py-3 rounded-lg bg-zinc-900/60 text-zinc-100 placeholder:text-zinc-500 border border-zinc-700/60 outline-none focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/20 transition";
@@ -11,8 +12,15 @@ const labelClass = "text-sm font-medium text-zinc-400 mb-1.5 block";
 const AddBook = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAdmin, loading } = useAuth();
 
     const book = location.state;
+
+    useEffect(() => {
+        if (!loading && !isAdmin) {
+            navigate("/books");
+        }
+    }, [isAdmin, loading, navigate]);
 
     const [formData, setFormData] = useState({
         title: book?.title || "",
@@ -20,6 +28,7 @@ const AddBook = () => {
         genre: book?.genre || "",
         publisher: book?.publisher || "",
         pageCount: book?.pageCount || "",
+        quantity: book?.quantity !== undefined ? book.quantity : 1,
     });
 
     const handleChange = (e) => {
@@ -37,9 +46,21 @@ const AddBook = () => {
             !formData.author ||
             !formData.genre ||
             !formData.publisher ||
-            !formData.pageCount
+            !formData.pageCount ||
+            formData.quantity === ""
         ) {
             alert("Please fill all the fields.");
+            return;
+        }
+
+        const payload = {
+            ...formData,
+            pageCount: Number(formData.pageCount),
+            quantity: Number(formData.quantity),
+        };
+
+        if (payload.quantity < 0) {
+            alert("Quantity must be a non-negative number.");
             return;
         }
 
@@ -47,14 +68,14 @@ const AddBook = () => {
             if (book) {
                 const response = await axios.put(
                     `http://localhost:3000/api/books/${book.id}`,
-                    formData,
+                    payload,
                     { withCredentials: true }
                 );
                 alert(response.data.message);
             } else {
                 const response = await axios.post(
                     "http://localhost:3000/api/books",
-                    formData,
+                    payload,
                     { withCredentials: true }
                 );
                 alert(response.data.message);
@@ -135,6 +156,7 @@ const AddBook = () => {
                                 <input
                                     id="pageCount"
                                     type="number"
+                                    min="1"
                                     name="pageCount"
                                     placeholder="180"
                                     value={formData.pageCount}
@@ -144,22 +166,38 @@ const AddBook = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <label className={labelClass} htmlFor="publisher">Publisher</label>
-                            <input
-                                id="publisher"
-                                type="text"
-                                name="publisher"
-                                placeholder="e.g. Scribner"
-                                value={formData.publisher}
-                                onChange={handleChange}
-                                className={inputClass}
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelClass} htmlFor="publisher">Publisher</label>
+                                <input
+                                    id="publisher"
+                                    type="text"
+                                    name="publisher"
+                                    placeholder="e.g. Scribner"
+                                    value={formData.publisher}
+                                    onChange={handleChange}
+                                    className={inputClass}
+                                />
+                            </div>
+
+                            <div>
+                                <label className={labelClass} htmlFor="quantity">Total Copies</label>
+                                <input
+                                    id="quantity"
+                                    type="number"
+                                    min="0"
+                                    name="quantity"
+                                    placeholder="1"
+                                    value={formData.quantity}
+                                    onChange={handleChange}
+                                    className={inputClass}
+                                />
+                            </div>
                         </div>
 
                         <button
                             type="submit"
-                            className="mt-2 bg-amber-500 hover:bg-amber-400 transition py-3 rounded-lg text-zinc-900 font-semibold"
+                            className="mt-2 bg-amber-500 hover:bg-amber-400 transition py-3 rounded-lg text-zinc-900 font-semibold cursor-pointer"
                         >
                             {book ? "Update Book" : "Add Book"}
                         </button>

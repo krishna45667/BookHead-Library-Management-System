@@ -13,7 +13,6 @@ const Register = () => {
         username: "",
         email: "",
         password: "",
-        dob: "",
     })
 
     const handleChange = (e) => {
@@ -29,8 +28,7 @@ const Register = () => {
         if (
             formData.username === "" ||
             formData.email === "" ||
-            formData.password === "" ||
-            formData.dob === ""
+            formData.password === ""
         ) {
             alert("Please fill all the fields.");
             return;
@@ -90,6 +88,16 @@ const Register = () => {
                     <div className="bg-zinc-800/60 backdrop-blur-sm border border-zinc-700/60 rounded-xl p-8 shadow-lg shadow-black/20">
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-zinc-300">Username</label>
+                                <input
+                                    className={inputClass}
+                                    type="text"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-zinc-300">Email</label>
                                 <input
                                     className={inputClass}
@@ -110,31 +118,8 @@ const Register = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-zinc-300">Username</label>
-                                    <input
-                                        className={inputClass}
-                                        type="text"
-                                        name="username"
-                                        value={formData.username}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-zinc-300">Date of Birth</label>
-                                    <input
-                                        className={`${inputClass} [color-scheme:dark]`}
-                                        type="date"
-                                        name="dob"
-                                        value={formData.dob}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </div>
-
                             <input
-                                className="w-full py-3 rounded-lg bg-amber-500 hover:bg-amber-400 transition font-semibold cursor-pointer text-zinc-900 text-lg hover:scale-[1.02] active:scale-95"
+                                className="w-full py-3 rounded-lg bg-amber-500 hover:bg-amber-400 transition font-semibold cursor-pointer text-zinc-900 text-lg hover:scale-[1.02] active:scale-95 mt-2"
                                 type="submit"
                                 value="Create Account"
                             />

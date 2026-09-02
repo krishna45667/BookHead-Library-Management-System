@@ -13,6 +13,7 @@ import BookCard from "../components/books/BookCard";
 
 const Home = () => {
     const [books, setBooks] = useState([]);
+    const [myBorrowedBookIds, setMyBorrowedBookIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState({});
 
@@ -23,7 +24,7 @@ const Home = () => {
                 "http://localhost:3000/api/books",
                 { withCredentials: true }
             );
-            setBooks(response.data.books);
+            setBooks(response.data.books || []);
         } catch (err) {
             console.log(err);
         } finally {
@@ -31,35 +32,51 @@ const Home = () => {
         }
     };
 
-    const fetchUser = async () => {
-    try {
-        const response = await axios.get(
-            "http://localhost:3000/api/auth/me",
-            {
-                withCredentials: true,
-            }
-        );
-        console.log(response.data);
-        setUser(response.data.user);
+    const fetchUserAndBorrowings = async () => {
+        try {
+            const response = await axios.get(
+                "http://localhost:3000/api/auth/me",
+                {
+                    withCredentials: true,
+                }
+            );
+            const currentUser = response.data.user;
+            setUser(currentUser);
 
-    } catch (err) {
-        console.log(err);
-    }
-};
+            if (currentUser && currentUser.role !== "admin") {
+                try {
+                    const borrowRes = await axios.get(
+                        "http://localhost:3000/api/borrowings/my",
+                        { withCredentials: true }
+                    );
+                    const activeIds = new Set(
+                        (borrowRes.data.borrowings || [])
+                            .filter((b) => b.status === "Active")
+                            .map((b) => (b.book?._id ? b.book._id : b.book))
+                    );
+                    setMyBorrowedBookIds(activeIds);
+                } catch (bErr) {
+                    console.error("Failed to fetch member borrowings:", bErr);
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     useEffect(() => {
         fetchBooks();
-        fetchUser();
+        fetchUserAndBorrowings();
     }, []);
 
     const totalBooks = books.length;
 
     const availableBooks = books.filter(
-        (book) => book.status === "Available"
+        (book) => (book.availableQuantity ?? 1) > 0
     ).length;
 
     const borrowedBooks = books.filter(
-        (book) => book.status === "Borrowed"
+        (book) => (book.availableQuantity ?? 0) === 0
     ).length;
 
     return (
@@ -75,7 +92,7 @@ const Home = () => {
                         <Cards
                             icon={<FaBook />}
                             count={totalBooks}
-                            title="Total Books"
+                            title="Total Titles"
                         />
                         <Cards
                             icon={<FaCheckCircle />}
@@ -85,7 +102,7 @@ const Home = () => {
                         <Cards
                             icon={<MdOutlineMenuBook />}
                             count={borrowedBooks}
-                            title="Borrowed"
+                            title="Unavailable"
                         />
                     </div>
 
@@ -124,8 +141,13 @@ const Home = () => {
                                     genre={book.genre}
                                     publisher={book.publisher}
                                     pageCount={book.pageCount}
-                                    status={book.status}
-                                    fetchBooks={fetchBooks}
+                                    quantity={book.quantity}
+                                    availableQuantity={book.availableQuantity}
+                                    fetchBooks={() => {
+                                        fetchBooks();
+                                        fetchUserAndBorrowings();
+                                    }}
+                                    isBorrowed={myBorrowedBookIds.has(book._id)}
                                 />
                             ))}
                         </div>
