@@ -21,7 +21,7 @@ const Home = () => {
         try {
             setLoading(true);
             const response = await axios.get(
-                "http://localhost:3000/api/books",
+                `${import.meta.env.VITE_API_URL}/api/books`,
                 { withCredentials: true }
             );
             setBooks(response.data.books || []);
@@ -35,7 +35,7 @@ const Home = () => {
     const fetchUserAndBorrowings = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:3000/api/auth/me",
+                `${import.meta.env.VITE_API_URL}/api/auth/me`,
                 {
                     withCredentials: true,
                 }
@@ -46,7 +46,7 @@ const Home = () => {
             if (currentUser && currentUser.role !== "admin") {
                 try {
                     const borrowRes = await axios.get(
-                        "http://localhost:3000/api/borrowings/my",
+                        `${import.meta.env.VITE_API_URL}/api/borrowings/my`,
                         { withCredentials: true }
                     );
                     const activeIds = new Set(

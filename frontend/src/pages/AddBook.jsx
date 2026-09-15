@@ -67,14 +67,14 @@ const AddBook = () => {
         try {
             if (book) {
                 const response = await axios.put(
-                    `http://localhost:3000/api/books/${book.id}`,
+                    `${import.meta.env.VITE_API_URL}/api/books/${book.id}`,
                     payload,
                     { withCredentials: true }
                 );
                 alert(response.data.message);
             } else {
                 const response = await axios.post(
-                    "http://localhost:3000/api/books",
+                    `${import.meta.env.VITE_API_URL}/api/books`,
                     payload,
                     { withCredentials: true }
                 );

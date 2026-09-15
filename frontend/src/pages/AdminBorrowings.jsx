@@ -28,7 +28,7 @@ const AdminBorrowings = () => {
         try {
             setError(null);
             const response = await axios.get(
-                "http://localhost:3000/api/admin/borrowings",
+                `${import.meta.env.VITE_API_URL}/api/admin/borrowings`,
                 { withCredentials: true }
             );
             setBorrowings(response.data.borrowings || []);
@@ -65,7 +65,7 @@ const AdminBorrowings = () => {
         try {
             setReturningId(borrowingId);
             const response = await axios.patch(
-                `http://localhost:3000/api/admin/borrowings/${borrowingId}/return`,
+                `${import.meta.env.VITE_API_URL}/api/admin/borrowings/${borrowingId}/return`,
                 {},
                 { withCredentials: true }
             );

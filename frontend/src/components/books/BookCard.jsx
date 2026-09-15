@@ -26,7 +26,7 @@ const BookCard = ({
         }
 
         try {
-            await axios.delete(`http://localhost:3000/api/books/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/books/${id}`, {
                 withCredentials: true,
             });
             alert("Book Deleted Successfully");
@@ -46,7 +46,7 @@ const BookCard = ({
         try {
             setBorrowing(true);
             const response = await axios.post(
-                `http://localhost:3000/api/borrowings/${id}`,
+                `${import.meta.env.VITE_API_URL}/api/borrowings/${id}`,
                 {},
                 { withCredentials: true }
             );

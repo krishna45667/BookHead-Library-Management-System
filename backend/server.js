@@ -20,6 +20,7 @@ connectDb();
 // Allowed origins for CORS
 const allowedOrigins = [
     process.env.CLIENT_URL,
+    "http://3.111.55.170",
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:3000",

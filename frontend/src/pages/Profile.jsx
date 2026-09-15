@@ -18,14 +18,14 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         const userResponse = await axios.get(
-          "http://localhost:3000/api/auth/me",
+          `${import.meta.env.VITE_API_URL}/api/auth/me`,
           {
             withCredentials: true,
           }
         );
 
         const booksResponse = await axios.get(
-          "http://localhost:3000/api/books",
+          `${import.meta.env.VITE_API_URL}/api/books`,
           {
             withCredentials: true,
           }

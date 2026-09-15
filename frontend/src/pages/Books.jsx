@@ -19,7 +19,7 @@ const Books = () => {
         try {
             setLoading(true);
             const response = await axios.get(
-                "http://localhost:3000/api/books",
+                `${import.meta.env.VITE_API_URL}/api/books`,
                 { withCredentials: true }
             );
             setBooks(response.data.books || []);
@@ -27,7 +27,7 @@ const Books = () => {
             if (!isAdmin) {
                 try {
                     const borrowRes = await axios.get(
-                        "http://localhost:3000/api/borrowings/my",
+                        `${import.meta.env.VITE_API_URL}/api/borrowings/my`,
                         { withCredentials: true }
                     );
                     const activeIds = new Set(

@@ -28,7 +28,7 @@ const AdminDashboard = () => {
         try {
             setError(null);
             const response = await axios.get(
-                "http://localhost:3000/api/dashboard/stats",
+                `${import.meta.env.VITE_API_URL}/api/dashboard/stats`,
                 { withCredentials: true }
             );
             setStats(response.data);

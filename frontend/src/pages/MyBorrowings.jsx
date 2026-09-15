@@ -17,7 +17,7 @@ const MyBorrowings = () => {
             setLoading(true);
             setError(null);
             const response = await axios.get(
-                "http://localhost:3000/api/borrowings/my",
+                `${import.meta.env.VITE_API_URL}/api/borrowings/my`,
                 { withCredentials: true }
             );
             setBorrowings(response.data.borrowings || []);
@@ -41,7 +41,7 @@ const MyBorrowings = () => {
         try {
             setReturningId(borrowingId);
             const response = await axios.patch(
-                `http://localhost:3000/api/borrowings/${borrowingId}/return`,
+                `${import.meta.env.VITE_API_URL}/api/borrowings/${borrowingId}/return`,
                 {},
                 { withCredentials: true }
             );
