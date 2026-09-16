@@ -1,4 +1,4 @@
-name: Docker CI
+name: CI/CD
 
 on:
   push:
@@ -29,3 +29,37 @@ jobs:
 
       - name: Push frontend image
         run: docker push krishnna26/library-frontend:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull krishnna26/library-backend:latest
+            docker pull krishnna26/library-frontend:latest
+
+            docker stop library-backend || true
+            docker rm library-backend || true
+
+            docker stop library-frontend || true
+            docker rm library-frontend || true
+
+            docker run -d \
+              --name library-backend \
+              -p 3000:3000 \
+              -e MONGO_URI='${{ secrets.MONGO_URI }}' \
+              -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+              -e PORT=3000 \
+              krishnna26/library-backend:latest
+
+            docker run -d \
+              --name library-frontend \
+              -p 80:80 \
+              krishnna26/library-frontend:latest
