@@ -18,8 +18,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Backend
       - name: Build backend image
         run: docker build -t krishnna26/library-backend:latest ./backend
 
       - name: Push backend image
         run: docker push krishnna26/library-backend:latest
+
+      # Frontend
+      - name: Build frontend image
+        run: docker build \
+          --build-arg VITE_API_URL=http://3.111.55.170:3000 \
+          -t krishnna26/library-frontend:latest ./frontend
+
+      - name: Push frontend image
+        run: docker push krishnna26/library-frontend:latest
