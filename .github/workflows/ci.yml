@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-           - name: Build backend image
+      - name: Build backend image
         run: docker build -t krishnna26/library-backend:latest ./backend
 
       - name: Push backend image
